@@ -1,7 +1,8 @@
 import { CollectionReference, getFirestore } from "firebase-admin/firestore";
 import { vehicle } from "../../domain/entities/vehicle.entity";
+import { VehicleGateway } from "../../application/ports/vehicle.gateway";
 
-export class VehicleRepository {
+export class VehicleRepository implements VehicleGateway {
   private collection: CollectionReference;
 
   constructor() {
@@ -76,21 +77,5 @@ export class VehicleRepository {
 
     const vehicleUpdated = await vehicleRef.get();
     return { id, ...vehicleUpdated.data() } as vehicle;
-  }
-
-  async delete(id: string): Promise<boolean> {
-    const vehicleRef = this.collection.doc(id);
-    const doc = await vehicleRef.get();
-
-    if (!doc.exists) {
-      return false;
-    }
-
-    if (doc.data()?.sold) {
-      return false;
-    }
-
-    await vehicleRef.delete();
-    return true;
   }
 }

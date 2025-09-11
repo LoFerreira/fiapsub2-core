@@ -1,7 +1,10 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import { celebrate, Joi, Segments } from "celebrate";
-import { vehicleSchema } from "../../domain/entities/vehicle.entity";
+import {
+  vehicleCreateSchema,
+  vehicleUpdateSchema,
+} from "../validators/vehicle.schema";
 import { VehicleController } from "../controllers/vehicle.controller";
 
 const vehicleRoutes = express.Router();
@@ -39,6 +42,39 @@ const vehicleRoutes = express.Router();
 /**
  * @swagger
  * /vehicles:
+ *   get:
+ *     summary: Lista todos os veículos
+ *     tags: [Vehicles]
+ *     parameters:
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum: [sold, available]
+ *         description: Filtrar veículos por status
+ *     responses:
+ *       200:
+ *         description: Lista de veículos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Vehicle'
+ */
+vehicleRoutes.get(
+  "/vehicles",
+  celebrate({
+    [Segments.QUERY]: {
+      filter: Joi.string().valid("sold", "available").optional(),
+    },
+  }),
+  expressAsyncHandler(VehicleController.getAll)
+);
+
+/**
+ * @swagger
+ * /vehicles:
  *   post:
  *     summary: Cria um novo veículo
  *     tags: [Vehicles]
@@ -60,33 +96,9 @@ const vehicleRoutes = express.Router();
  */
 vehicleRoutes.post(
   "/vehicles",
-  celebrate({ [Segments.BODY]: vehicleSchema }),
+  celebrate({ [Segments.BODY]: vehicleCreateSchema }),
   expressAsyncHandler(VehicleController.create)
 );
-
-/**
- * @swagger
- * /vehicles/{id}:
- *   delete:
- *     summary: Exclui um veículo existente
- *     tags: [Vehicles]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID do veículo a ser excluído
- *     responses:
- *       200:
- *         description: Veículo excluído com sucesso
- */
-vehicleRoutes.delete(
-  "/vehicles/:id",
-  celebrate({ [Segments.PARAMS]: { id: Joi.string().required() } }),
-  expressAsyncHandler(VehicleController.delete)
-);
-
 /**
  * @swagger
  * /vehicles/{id}:
@@ -112,7 +124,7 @@ vehicleRoutes.delete(
  */
 vehicleRoutes.put(
   "/vehicles/:id",
-  celebrate({ [Segments.BODY]: vehicleSchema }),
+  celebrate({ [Segments.BODY]: vehicleUpdateSchema }),
   expressAsyncHandler(VehicleController.update)
 );
 

@@ -1,0 +1,65 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/fiapsub2-firebase-sdk.json
+    volumes:
+      - type: bind
+        source: ./fiapsub2-firebase-sdk.json
+        target: /app/fiapsub2-firebase-sdk.json
+        read_only: true
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/api-docs.json",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+  app-dev:
+    profiles: ["dev"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/fiapsub2-firebase-sdk.json
+    volumes:
+      - type: bind
+        source: ./fiapsub2-firebase-sdk.json
+        target: /app/fiapsub2-firebase-sdk.json
+        read_only: true
+      - ./src:/app/src:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./.env:/app/.env:ro
+    command: npm run start
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

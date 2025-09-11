@@ -10,7 +10,7 @@ const app = express();
 try {
   const credPath =
     process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-    "/var/secrets/fiapsub1-firebase-sdk.json";
+    "/var/secrets/fiapsub2-firebase-sdk.json"; // fallback compatível com K8s
   const raw = fs.readFileSync(credPath, "utf8");
   const sa = JSON.parse(raw);
   initializeApp({

@@ -4,7 +4,7 @@ import { swaggerSpec } from "../config/swagger.config";
 
 export const setupSwagger = (app: express.Application): void => {
   app.use(
-    "/",
+    "/api-docs",
     swaggerUi.serve,
     swaggerUi.setup(swaggerSpec, {
       explorer: true,
@@ -16,7 +16,7 @@ export const setupSwagger = (app: express.Application): void => {
     })
   );
 
-  app.get("/.json", (req, res) => {
+  app.get("/api-docs.json", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerSpec);
   });

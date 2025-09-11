@@ -1,8 +1,7 @@
 /node_modules
 /lib
-/.env
-
-fiapsub1-firebase-sdk.json
+.env
+fiapsub2-firebase-sdk.json
 
 # macOS
 .DS_Store
