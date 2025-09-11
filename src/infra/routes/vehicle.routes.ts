@@ -4,6 +4,8 @@ import { celebrate, Joi, Segments } from "celebrate";
 import {
   vehicleCreateSchema,
   vehicleUpdateSchema,
+  vehicleIdParamSchema,
+  vehicleSellBodySchema,
 } from "../validators/vehicle.schema";
 import { VehicleController } from "../controllers/vehicle.controller";
 
@@ -126,6 +128,66 @@ vehicleRoutes.put(
   "/vehicles/:id",
   celebrate({ [Segments.BODY]: vehicleUpdateSchema }),
   expressAsyncHandler(VehicleController.update)
+);
+
+/**
+ * @swagger
+ * /vehicles/{id}:
+ *   delete:
+ *     summary: Exclui um veículo existente
+ *     tags: [Vehicles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do veículo a ser excluído
+ *     responses:
+ *       200:
+ *         description: Veículo excluído com sucesso
+ */
+vehicleRoutes.delete(
+  "/vehicles/:id",
+  celebrate({ [Segments.PARAMS]: vehicleIdParamSchema }),
+  expressAsyncHandler(VehicleController.delete)
+);
+
+/**
+ * @swagger
+ * /vehicles/{id}/sell:
+ *   post:
+ *     summary: Marca um veículo como vendido
+ *     tags: [Vehicles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do veículo a ser marcado como vendido
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               buyerCpf:
+ *                 type: string
+ *             required:
+ *               - buyerCpf
+ *     responses:
+ *       200:
+ *         description: Veículo marcado como vendido
+ */
+vehicleRoutes.post(
+  "/vehicles/:id/sell",
+  celebrate({
+    [Segments.PARAMS]: vehicleIdParamSchema,
+    [Segments.BODY]: vehicleSellBodySchema,
+  }),
+  expressAsyncHandler(VehicleController.sell)
 );
 
 export default vehicleRoutes;

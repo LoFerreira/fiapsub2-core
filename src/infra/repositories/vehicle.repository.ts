@@ -53,7 +53,8 @@ export class VehicleRepository implements VehicleGateway {
     }
 
     await this.collection.doc(id).update(vehicleData);
-    return { id, ...vehicleData } as vehicle;
+    const updated = await vehicleRef.get();
+    return { id, ...(updated.data() as any) } as vehicle;
   }
 
   async create(vehicleData: Partial<vehicle>): Promise<vehicle> {
@@ -77,5 +78,17 @@ export class VehicleRepository implements VehicleGateway {
 
     const vehicleUpdated = await vehicleRef.get();
     return { id, ...vehicleUpdated.data() } as vehicle;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const vehicleRef = this.collection.doc(id);
+    const doc = await vehicleRef.get();
+
+    if (!doc.exists) {
+      return false;
+    }
+
+    await vehicleRef.delete();
+    return true;
   }
 }

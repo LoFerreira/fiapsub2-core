@@ -11,4 +11,18 @@ export const vehicleCreateSchema = Joi.object({
   saleDate: Joi.string().optional(),
 });
 
-export const vehicleUpdateSchema = vehicleCreateSchema; // For now same as create
+export const vehicleUpdateSchema = Joi.object({
+  brand: Joi.string().optional(),
+  model: Joi.string().optional(),
+  year: Joi.number().integer().optional(),
+  color: Joi.string().optional(),
+  price: Joi.number().optional(),
+}).options({ stripUnknown: true });
+
+export const vehicleIdParamSchema = Joi.object({
+  id: Joi.string().required(),
+});
+
+export const vehicleSellBodySchema = Joi.object({
+  buyerCpf: Joi.string().required(),
+});

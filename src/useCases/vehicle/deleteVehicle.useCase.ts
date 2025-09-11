@@ -1,19 +1,16 @@
-import { vehicle } from "../../domain/entities/vehicle.entity";
 import { VehicleGateway } from "../../application/ports/vehicle.gateway";
 import { VehicleRepository } from "../../infra/repositories/vehicle.repository";
 import { NotFoundError } from "../../domain/errors/not-found.error";
 
-export class UpdateVehicleUseCase {
+export class DeleteVehicleUseCase {
   constructor(
     private vehicleRepository: VehicleGateway = new VehicleRepository()
   ) {}
 
-  async execute(id: string, vehicleData: Partial<vehicle>): Promise<vehicle> {
-    const { sold, buyerCpf, saleDate, ...updatable } = vehicleData as any;
-    const vehicle = await this.vehicleRepository.update(id, updatable);
-    if (!vehicle) {
+  async execute(id: string): Promise<void> {
+    const deleted = await this.vehicleRepository.delete(id);
+    if (!deleted) {
       throw new NotFoundError("Vehicle not found");
     }
-    return vehicle;
   }
 }

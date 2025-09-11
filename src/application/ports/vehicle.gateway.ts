@@ -7,4 +7,5 @@ export interface VehicleGateway {
   create(vehicleData: Partial<vehicle>): Promise<vehicle>;
   update(id: string, vehicleData: Partial<vehicle>): Promise<vehicle | null>;
   sell(id: string, buyerCpf: string): Promise<vehicle | null>;
+  delete(id: string): Promise<boolean>;
 }
